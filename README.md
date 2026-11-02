@@ -4,9 +4,15 @@ A simple FastAPI application that fetches random dog **images** (filters out vid
 
 **Note:** The random.dog API sometimes returns video files (.mp4, .webm). This API automatically filters those out and only returns image files (.jpg, .jpeg, .png, .gif, .webp).
 
+---
+
+### 🐕 Attribution
+
+**Dog images provided by [random.dog](https://random.dog)** — This API is a wrapper around their public API at `https://random.dog/woof.json`. Please check their site for usage terms and consider supporting them if you use this heavily.
+
 ## Features
 
-- **GET `/dog`** - **Redirects directly to a random dog image** (perfect for `<img src="...">`)
+- **GET `/dog`** - **Returns a random dog image directly (proxied)** — URL stays the same, refresh for new image. Perfect for `<img src="...">`
 - **GET `/dog/json`** - Returns JSON with image URL and file size (metadata)
 - **GET `/health`** - Health check endpoint for monitoring
 - **GET `/`** - Redirects to API documentation (Swagger UI)
@@ -43,17 +49,18 @@ docker run -p 8000:8000 get-random-dog
 
 ## API Endpoints
 
-### Get Random Dog (Image Redirect) — **Ana Endpoint**
+### Get Random Dog (Proxied Image) — **Ana Endpoint**
 
 ```bash
-curl -L http://localhost:8000/dog
+curl http://localhost:8000/dog
 ```
-Doğrudan resme yönlendirir. **Video dosyaları (.mp4, .webm) otomatik filtrelenir**, sadece resim döner.
+**Resim doğrudan döner (proxy)** — URL `https://your-domain.com/dog` **kalır**, her refresh'te yeni rastgele resim gelir. **Video dosyaları (.mp4, .webm) otomatik filtrelenir.**
 
 HTML'de kullanım:
 ```html
 <img src="https://your-domain.com/dog" alt="Random Dog" />
 ```
+> **Not:** Redirect değil, resim içeriği proxy edilir. Bu sayede `<img>` tag'inde her sayfa yenilemesinde yeni köpek resmi görünür.
 
 ### Get Random Dog (JSON Metadata)
 
@@ -85,7 +92,7 @@ Response:
 
 ## Free Deployment Options
 
-### 1. Render.com (Recommended) ⭐
+### 1. Render.com (Recommended) ⭐ — **Python Native (Docker yok, daha az RAM)**
 
 **Free tier includes:** Custom subdomain, SSL, auto-deploy from GitHub
 
@@ -95,10 +102,11 @@ Response:
 4. Connect your GitHub repo
 5. Configure:
    - **Name**: `get-random-dog` (or your preferred name)
-   - **Region**: Choose closest to you
-   - **Branch**: `main`
-   - **Runtime**: `Docker`
-   - **Dockerfile Path**: `./Dockerfile`
+   - **Region**: Choose closest to you (e.g., `Frankfurt`)
+   - **Branch**: `master`
+   - **Runtime**: **`Python 3`** (Docker **değil**)
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `uvicorn main:app --host 0.0.0.0 --port $PORT`
    - **Instance Type**: `Free`
 6. Click "Create Web Service"
 
@@ -173,3 +181,7 @@ MIT License - Feel free to use and modify!
 
 - Dog images provided by [random.dog](https://random.dog)
 - Built with [FastAPI](https://fastapi.tiangolo.com)
+
+## Author
+
+**Akın** — [psyghost17@gmail.com](mailto:psyghost17@gmail.com) — [GitHub](https://github.com/psyghost17)

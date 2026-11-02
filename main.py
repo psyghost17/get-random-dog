@@ -3,7 +3,7 @@ FastAPI application to fetch random dog images from random.dog API.
 """
 import httpx
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, StreamingResponse
 from pydantic import BaseModel
 from typing import Optional
 
@@ -102,25 +102,55 @@ async def root():
 
 @app.get(
     "/dog",
-    response_class=RedirectResponse,
+    response_class=StreamingResponse,
     responses={
+        200: {"content": {"image/*": {}}, "description": "Random dog image"},
         502: {"model": ErrorResponse, "description": "Bad gateway - upstream API error"},
         503: {"model": ErrorResponse, "description": "Service unavailable - network error"},
     },
-    summary="Get a random dog image (redirects to image)",
-    description="Redirects directly to a random dog image URL. Use in `<img src=\"...\">` tags.",
+    summary="Get a random dog image (proxied)",
+    description="Returns a random dog image directly. URL stays the same, refresh for new image. Use in `<img src=\"...\">` tags.",
 )
 async def get_random_dog():
     """
-    Get a random dog image directly.
+    Get a random dog image directly (proxied).
 
-    Redirects to the actual image URL. Perfect for:
+    Returns the actual image content. URL stays as `/dog` — refresh to get a new random dog.
+    Perfect for:
     - `<img src="https://your-domain.com/dog" alt="Random Dog" />`
-    - Direct browser access
+    - Direct browser access — refresh for new image
     - Any client expecting an image response
     """
     dog = await fetch_random_dog()
-    return RedirectResponse(url=dog.url)
+
+    # Resmi indir ve stream et
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        try:
+            response = await client.get(dog.url)
+            response.raise_for_status()
+
+            # Content-Type header'ını koru
+            content_type = response.headers.get("content-type", "image/jpeg")
+
+            return StreamingResponse(
+                response.aiter_bytes(chunk_size=8192),
+                media_type=content_type,
+                headers={
+                    "Cache-Control": "no-cache, no-store, must-revalidate",
+                    "Pragma": "no-cache",
+                    "Expires": "0",
+                }
+            )
+        except httpx.HTTPStatusError as e:
+            raise HTTPException(
+                status_code=502,
+                detail=f"Failed to fetch image: {e.response.status_code}"
+            )
+        except httpx.RequestError as e:
+            raise HTTPException(
+                status_code=503,
+                detail=f"Network error fetching image: {str(e)}"
+            )
 
 
 @app.get(
