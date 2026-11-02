@@ -1,11 +1,13 @@
 # Get Random Dog API
 
-A simple FastAPI application that fetches random dog images from [random.dog](https://random.dog) API.
+A simple FastAPI application that fetches random dog **images** (filters out videos) from [random.dog](https://random.dog) API.
+
+**Note:** The random.dog API sometimes returns video files (.mp4, .webm). This API automatically filters those out and only returns image files (.jpg, .jpeg, .png, .gif, .webp).
 
 ## Features
 
-- **GET `/dog`** - Returns JSON with random dog image URL and file size
-- **GET `/dog/redirect`** - Redirects directly to a random dog image (great for `<img>` tags)
+- **GET `/dog`** - **Redirects directly to a random dog image** (perfect for `<img src="...">`)
+- **GET `/dog/json`** - Returns JSON with image URL and file size (metadata)
 - **GET `/health`** - Health check endpoint for monitoring
 - **GET `/`** - Redirects to API documentation (Swagger UI)
 - **GET `/docs`** - Interactive API documentation (Swagger UI)
@@ -41,10 +43,22 @@ docker run -p 8000:8000 get-random-dog
 
 ## API Endpoints
 
-### Get Random Dog (JSON)
+### Get Random Dog (Image Redirect) — **Ana Endpoint**
 
 ```bash
-curl http://localhost:8000/dog
+curl -L http://localhost:8000/dog
+```
+Doğrudan resme yönlendirir. **Video dosyaları (.mp4, .webm) otomatik filtrelenir**, sadece resim döner.
+
+HTML'de kullanım:
+```html
+<img src="https://your-domain.com/dog" alt="Random Dog" />
+```
+
+### Get Random Dog (JSON Metadata)
+
+```bash
+curl http://localhost:8000/dog/json
 ```
 
 Response:
@@ -53,16 +67,6 @@ Response:
   "url": "https://random.dog/abc123.jpg",
   "file_size_bytes": 131600
 }
-```
-
-### Get Random Dog (Redirect)
-
-```bash
-curl -L http://localhost:8000/dog/redirect
-```
-Redirects directly to the image URL. Use in HTML:
-```html
-<img src="https://your-domain.com/dog/redirect" alt="Random Dog" />
 ```
 
 ### Health Check
