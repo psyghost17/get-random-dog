@@ -37,16 +37,6 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8000
 
 The API will be available at `http://localhost:8000`
 
-### Using Docker
-
-```bash
-# Build the image
-docker build -t get-random-dog .
-
-# Run the container
-docker run -p 8000:8000 get-random-dog
-```
-
 ## API Endpoints
 
 ### Get Random Dog (Proxied Image) — **Ana Endpoint**
@@ -169,7 +159,6 @@ No environment variables required for basic operation. The app connects directly
 get-random-dog/
 ├── main.py           # FastAPI application
 ├── requirements.txt  # Python dependencies
-├── Dockerfile        # Multi-stage Docker build
 └── README.md         # This file
 ```
 
