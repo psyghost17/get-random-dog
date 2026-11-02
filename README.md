@@ -1,6 +1,6 @@
 # Get Random Dog API
 
-A simple FastAPI application that fetches random dog **images** (filters out videos) from [random.dog](https://random.dog) API.
+A simple FastAPI application that fetches random dog **images** (filters out videos) from the [random.dog](https://random.dog) API.
 
 **Note:** The random.dog API sometimes returns video files (.mp4, .webm). This API automatically filters those out and only returns image files (.jpg, .jpeg, .png, .gif, .webp).
 
@@ -39,18 +39,18 @@ The API will be available at `http://localhost:8000`
 
 ## API Endpoints
 
-### Get Random Dog (Proxied Image) — **Ana Endpoint**
+### Get Random Dog (Proxied Image) — **Main Endpoint**
 
 ```bash
 curl http://localhost:8000/dog
 ```
-**Resim doğrudan döner (proxy)** — URL `https://your-domain.com/dog` **kalır**, her refresh'te yeni rastgele resim gelir. **Video dosyaları (.mp4, .webm) otomatik filtrelenir.**
+**Returns image directly (proxied)** — URL `https://your-domain.com/dog` **stays the same**, each refresh returns a new random image. **Video files (.mp4, .webm) are automatically filtered out.**
 
-HTML'de kullanım:
+HTML usage:
 ```html
 <img src="https://your-domain.com/dog" alt="Random Dog" />
 ```
-> **Not:** Redirect değil, resim içeriği proxy edilir. Bu sayede `<img>` tag'inde her sayfa yenilemesinde yeni köpek resmi görünür.
+> **Note:** This is not a redirect — the image content is proxied. This means each page refresh in an `<img>` tag shows a new random dog image.
 
 ### Get Random Dog (JSON Metadata)
 
@@ -82,7 +82,7 @@ Response:
 
 ## Free Deployment Options
 
-### 1. Render.com (Recommended) ⭐ — **Python Native (Docker yok, daha az RAM)**
+### 1. Render.com (Recommended) ⭐ — **Python Native (No Docker, Less RAM)**
 
 **Free tier includes:** Custom subdomain, SSL, auto-deploy from GitHub
 
@@ -94,7 +94,7 @@ Response:
    - **Name**: `get-random-dog` (or your preferred name)
    - **Region**: Choose closest to you (e.g., `Frankfurt`)
    - **Branch**: `master`
-   - **Runtime**: **`Python 3`** (Docker **değil**)
+   - **Runtime**: **`Python 3`** (NOT Docker)
    - **Build Command**: `pip install -r requirements.txt`
    - **Start Command**: `uvicorn main:app --host 0.0.0.0 --port $PORT`
    - **Instance Type**: `Free`
@@ -109,7 +109,7 @@ Your API will be available at: `https://get-random-dog.onrender.com` (or your ch
 1. Go to [Railway](https://railway.app)
 2. Click "New Project" → "Deploy from GitHub repo"
 3. Select your repo
-4. Railway auto-detects Dockerfile
+4. Railway auto-detects Python
 5. Your API gets a subdomain like: `https://get-random-dog-production.up.railway.app`
 
 ### 3. Fly.io
@@ -125,7 +125,7 @@ Your API will be available at: `https://get-random-dog.onrender.com` (or your ch
 
 **Free tier includes:** 100,000 requests/day
 
-For FastAPI, use Cloudflare Pages with a Python worker or adapt to Workers.
+1. For FastAPI, use Cloudflare Pages with a Python worker or adapt to Workers.
 
 ### 5. PythonAnywhere
 
